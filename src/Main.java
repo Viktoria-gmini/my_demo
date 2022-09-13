@@ -13,14 +13,14 @@ public class Main {
     public static String calc(String input) throws Exception {
 
         char[] operations = {'+', '-', '*', '/'};//это пригодится позже
-        if (!(Pattern.matches("[0-9]+[+-/*//]{1}[0-9]+", input)
-                || Pattern.matches("[IVX]+[+-/*//]{1}[IVX]+", input))) {
+        if (!(Pattern.matches("[0-9]+[+-/*/]{1}[0-9]+", input)
+                || Pattern.matches("[IVX]+[+-/*/]{1}[IVX]+", input))) {
             throw new Exception("You didn't enter expression kind of \"a[+-*/]b\",where both numbers are either Arabic or Roman" +
                     " in the range from 1 to 10");//здесь идёт проверка того, что выражение правильного вида
         }
         int[] numbers = {0, 0};//a и b
         boolean[] types = {false, false};//типы a и b соответственно,false, если число арабское, true, если римское
-        StringTokenizer tokenizer = new StringTokenizer(input, "+-*// ");//разделяем строку на два элемента
+        StringTokenizer tokenizer = new StringTokenizer(input, "+-*/ ");//разделяем строку на два элемента
         String token;
         for (int i = 0; i < 2; i++) {
             token = tokenizer.nextToken();
@@ -32,8 +32,8 @@ public class Main {
                         types[i] = true;
                     }
                 }
-                if (types[i] == false) {//если число не римское
-                    numbers[i] = Integer.valueOf(token);
+                if (!types[i]) {//если число не римское
+                    numbers[i] = Integer.parseInt(token);
                 }
                 if ((numbers[i] < 1) || (numbers[i] > 10)) {
                     throw new Exception("You entered the number, which less than 1 or more than 10");
@@ -52,42 +52,23 @@ public class Main {
             if (input.indexOf(op) != -1) operation = op;
         }
         int result_int;
-        if (types[0] == false) {//если числа арабские
-            switch (operation) {
-                case '+':
-                    result_int = numbers[0] + numbers[1];
-                    break;
-                case '-':
-                    result_int = numbers[0] - numbers[1];
-                    break;
-                case '*':
-                    result_int = numbers[0] * numbers[1];
-                    break;
-                case '/':
-                    result_int = numbers[0] / numbers[1];
-                    break;
-                default:
-                    throw new Exception("Unknown exception");
-            }
+        if (!types[0]) {//если числа арабские
+            result_int = switch (operation) {
+                case '+' -> numbers[0] + numbers[1];
+                case '-' -> numbers[0] - numbers[1];
+                case '*' -> numbers[0] * numbers[1];
+                case '/' -> numbers[0] / numbers[1];
+                default -> throw new Exception("Unknown exception");
+            };
             return String.valueOf(result_int);
         } else {//если числа римские
-            switch (operation) {
-                case '+':
-                    result_int = numbers[0] + numbers[1];
-                    break;
-                case '-':
-                    result_int = numbers[0] - numbers[1];
-
-                    break;
-                case '*':
-                    result_int = numbers[0] * numbers[1];
-                    break;
-                case '/':
-                    result_int = numbers[0] / numbers[1];
-                    break;
-                default:
-                    throw new Exception("Unknown exception");
-            }
+            result_int = switch (operation) {
+                case '+' -> numbers[0] + numbers[1];
+                case '-' -> numbers[0] - numbers[1];
+                case '*' -> numbers[0] * numbers[1];
+                case '/' -> numbers[0] / numbers[1];
+                default -> throw new Exception("Unknown exception");
+            };
             if (result_int <= 0) {
                 throw new Exception("Calculation result of 2 Roman numerals can't be negative or null");
             }
